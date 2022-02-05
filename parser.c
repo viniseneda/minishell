@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:55 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/01/27 14:23:59 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/05 19:04:38 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,11 @@ t_node	*split_by_pipe(t_node **list)
 	return (command);
 }
 
+// int	get_fd_for_file(char *file_name, int overwrite, t_node	**dict)
+// {
+
+// }
+
 t_parse_data	parse_in(t_parse_data data)
 {
 	int	index;
@@ -103,9 +108,9 @@ t_parse_data	parse_in(t_parse_data data)
 	if (index < 0)
 	{
 		if (data.last_was_pipe)
-			data.in = ft_strdup("last pipe");
+			data.fd_in = data.pipe2[0];
 		else
-			data.in = ft_strdup("stdin");
+			data.fd_in = 0;
 		return (data);
 	}
 	//fazer condição de  erro de quando nao tem nada depois do >
@@ -114,12 +119,12 @@ t_parse_data	parse_in(t_parse_data data)
 		temp = iterate_list(*data.token_list, index);
 		if (strncmp(temp->data, "<<", 2) == 0)
 			data.is_here_doc = 1;
-		if (temp->next == NULL || temp->next->is_operator)
+		if (temp->next == NULL || temp->next->operator > 0)
 		{
 			errno = 502; // sintax error
 			return (data);
 		}
-		data.in = temp->next->data;
+		data.fd_in = get_fd_for_file(temp->next->data, 0, data.dict);
 		iterate_list(*data.token_list, index - 1)->next = temp->next->next;
 		free(temp->next);
 		free_simple_node(temp);
@@ -137,23 +142,24 @@ t_parse_data	parse_out(t_parse_data data, t_node *other_pipes)
 	if (index < 0)
 	{
 		if (other_pipes != NULL)
-			data.out = ft_strdup("next pipe");
+			data.fd_out = data.pipe1[1];
 		else
-			data.out = ft_strdup("stdout");
+			data.fd_out = 1;
 		return (data);
 	}
 	//fazer condição de  erro de quando nao tem nada depois do >
 	while (index > 0)
 	{
 		temp = iterate_list(*data.token_list, index);
-		if (strncmp(temp->data, ">>", 2) == 0)
-			data.is_append = 1;
-		if (temp->next == NULL || temp->next->is_operator)
+		if (temp->next == NULL || temp->next->operator > 0)
 		{
 			errno = 502; // sintax error
 			return (data);
 		}
-		data.out = temp->next->data;
+		if (strncmp(temp->data, ">>", 2) == 0)
+			data.fd_out = get_fd_for_file(temp->next->data, 1, data.dict);
+		else
+			data.fd_out = get_fd_for_file(temp->next->data, 0, data.dict);
 		iterate_list(*data.token_list, index - 1)->next = temp->next->next;
 		free(temp->next);
 		free_simple_node(temp);
@@ -179,7 +185,6 @@ t_parse_data	parse_assigment(t_parse_data data)
 		data.assigment = node;
 		*data.token_list = node->next;
 	}
-
 	return(data);
 }
 
@@ -212,9 +217,8 @@ void	print_parse(t_parse_data data)
 	t_node *as;
 
 	as = data.assigment;
-	printf("in: %s\n", data.in);
-	printf("out: %s\n", data.out);
-	printf("is append: %d\n", data.is_append);
+	printf("in: %d\n", data.fd_in);
+	printf("out: %d\n", data.fd_out);
 	printf("is here doc: %d\n", data.is_here_doc);
 	if (as != NULL)
 		printf("assigment: %s\n", (char *)as->data);
@@ -225,35 +229,47 @@ void	print_parse(t_parse_data data)
 
 void	free_parse_data(t_parse_data data)
 {
-	free(data.in);
-	free(data.out);
 	free_str_array(data.args);
 }
 
-void	parse(t_node *token_list)
+void	parse(t_node *token_list, t_node **dict)
 {
 	t_node			*sub_token_list;
 	t_parse_data	data;
 
 	data.last_was_pipe = 0;
 	data.assigment = NULL;
+	data.dict = dict;
 	while(token_list != NULL)
 	{
-		data.is_append = 0;
+		data.pipe2[0] = data.pipe1[0];
+		data.pipe2[1] = data.pipe1[1];
+		pipe(data.pipe1);
 		data.is_here_doc = 0;
 		sub_token_list  = split_by_pipe(&token_list);
 		data.token_list = &sub_token_list;
+
+
 		data = parse_in(data);
 		data = parse_out(data, token_list);
+
 		if (errno == 502)
 		{
 			printf("Sintax error\n");
 			return ;
 		}
+
 		data = parse_assigment(data);
 		data = parse_cmd_and_args(data);
 		// free_list(sub_token_list);
-		print_parse(data);
+
+		data.envp = make_envp_from_dict(data.dict);
+		// write(1, "A\n", 2);
+		// print_parse(data);
+
+		data.bin_path = check_command_path(data);
+		exec_command(data);
+		
 		free_parse_data(data);
 		data.last_was_pipe = 1;
 	}

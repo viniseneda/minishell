@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:22:37 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/01/27 14:22:46 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/01/30 14:27:22 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int		size_of_list(t_node *list)
 	return(i);
 }
 
-t_node	*add_node_to_list(t_node *list, char *data, int is_operator)
+t_node	*add_node_to_list(t_node *list, char *data, int operator)
 {
 	t_node *node;
 
@@ -46,7 +46,7 @@ t_node	*add_node_to_list(t_node *list, char *data, int is_operator)
 		return (list);
 	node = malloc(sizeof(t_node));
 	node->next = NULL;
-	node->is_operator = is_operator;
+	node->operator = operator;
 	node->data = ft_strdup(data);
 	if (list != NULL)
 		get_last_node(list)->next = node;

@@ -1,4 +1,4 @@
-SRCS	= dict.c tokenizer.c list.c parser.c minishell.c
+SRCS	= dict.c tokenizer.c list.c parser.c vars.c envp.c files.c minishell.c
 OBJS	= ${SRCS:.c=.o}
 
 CC	= cc
@@ -14,7 +14,7 @@ NAME	= minishell
 RM	= rm -f
 
 $(NAME):	${OBJS}
-	cc -o $(NAME) ${OBJS} -L./libft -lft -lreadline
+	cc -o $(NAME) ${OBJS} -L./libft -lft -lreadline -g
 
 
 all:	$(NAME)

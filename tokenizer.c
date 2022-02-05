@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:24:42 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/01/27 14:24:45 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/01/30 14:46:42 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ char *temp_str(char c)
 	unsigned int size;
 
 	size = strlen(str);
-	if (c < 0)
+	if (c == -2)
+		return (str);
+	if (c == -1)
 	{
 		reset_temp_str(str);
 		return (NULL);
@@ -46,9 +48,41 @@ char *temp_str(char c)
 	return (str);
 }
 
-void	add_token_to_list(t_node **list, char *token, int is_operator)
+char *temp_str2(char c)
 {
-	*list = add_node_to_list(*list, token, is_operator);
+	static char str[SIZE_OF_TEMP];
+	unsigned int size;
+
+	size = strlen(str);
+	if (c == -2)
+		return (str);
+	if (c == -1)
+	{
+		reset_temp_str(str);
+		return (NULL);
+	}
+	*(str + size) = c;
+	*(str + size + 1) = '\0';
+	return (str);
+}
+
+char *add_str_to_temp(char *str)
+{
+	char *out;
+
+	if (str == NULL || *str == '\0')
+		return (temp_str(-2));
+	while(*str)
+	{
+		out = temp_str(*str);
+		str++;
+	}
+	return (out);
+}
+
+void	add_token_to_list(t_node **list, char *token, int operator)
+{
+	*list = add_node_to_list(*list, token, operator);
 	temp_str(-1);
 }
 
@@ -60,7 +94,7 @@ void	token_quote(t_node **list, char **line, char q)
 
 	if (**line == q)
 	{
-		add_token_to_list(list, temp_str(**line), 1); // are the quotes thenselves operators?
+		// add_token_to_list(list, temp_str(**line), 1); // are the quotes thenselves operators?
 		*line = *line + 1;
 		while(**line != q && **line)
 		{
@@ -72,8 +106,11 @@ void	token_quote(t_node **list, char **line, char q)
 			errno = 501;
 			return;
 		}
-		add_token_to_list(list, token, 0);
-		add_token_to_list(list, temp_str(**line), 1);
+		if (q == '\"')
+			add_token_to_list(list, token, 0);
+		else
+			add_token_to_list(list, token, -1);
+		// add_token_to_list(list, temp_str(**line), 1);
 		*line = *line + 1;
 	}
 }
@@ -107,6 +144,7 @@ t_node *tokenize(char *line)
 	t_node	*list;
 
 	list = NULL;
+	temp_str(-1);
 	while(*line)
 	{
 		token = NULL;

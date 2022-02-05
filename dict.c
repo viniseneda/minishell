@@ -48,6 +48,19 @@ int		print_tuple_list(t_node *node)
 	return (size);
 }
 
+int		count_tuple_list(t_node *node)
+{
+	int	size;
+
+	size = 0;
+	while (node != NULL)
+	{
+		node = node->next;
+		size++;
+	}
+	return (size);
+}
+
 void	free_tuple_list(t_node *node)
 {
 	t_node	*last;
@@ -107,6 +120,24 @@ int	print_dict(t_node **dict)
 	return(size);
 }
 
+int	dict_size(t_node **dict)
+{
+	int i;
+	int size;
+
+	i = 0;
+	size = 0;
+	while (i < DICT_ARRAY_SIZE)
+	{
+		if (*(dict + i) != NULL)
+		{
+			size += count_tuple_list(*(dict + i));
+		}
+		i++;
+	}
+	return(size);
+}
+
 void	free_dict(t_node **dict)
 {
 	int i;
@@ -124,17 +155,19 @@ void	free_dict(t_node **dict)
 t_node *find_dict_node(t_node **dict, char *key)
 {
 	int	hash;
-	int	i;
+	t_node	*node;
 
-	i = 0;
 	hash = get_hash(key) % DICT_ARRAY_SIZE;
 	if (dict[hash] != NULL)
-		while (dict[hash + i] != NULL)
+	{
+		node = dict[hash];
+		while (node != NULL)
 		{
-			if (ft_strncmp(dict[hash + i]->key, key, ft_strlen(key)) == 0)
-				return (dict[hash + i]);
-			i++;
+			if (ft_strncmp(node->key, key, ft_strlen(key)) == 0)
+				return (node);
+			node = node->next;
 		}
+	}
 	return (NULL);
 }
 
@@ -148,6 +181,22 @@ int		change_dict_value(t_node **dict, char *key, char *new_value)
 	free(node->data);
 	node->data = ft_strdup(new_value);
 	return(1);
+}
+
+char *find_var(t_node **dict, char *key)
+{
+	t_node *node;
+
+	node = find_dict_node(dict, key);
+	if (node == NULL)
+		return (NULL);
+	return (node->data);
+}
+
+void	change_or_add_value(t_node **dict, char *key, char *value)
+{
+	if (!change_dict_value(dict, key, value))
+		add_dict_value(dict, key, value);
 }
 
 // int	main(void)
