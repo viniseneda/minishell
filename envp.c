@@ -43,7 +43,7 @@ void	save_envp_to_dict(t_node **dict, char **envp)
 	while (*envp != NULL)
 	{
 		line = *envp;
-		add_dict_value(dict, get_key(line), get_value(line));
+		add_dict_value(dict, get_key(line), get_value(line), 1);
 		envp++;
 	}
 }
@@ -52,10 +52,26 @@ int		transfom_tuple_list(t_node *node, char **envp, int i)
 {
 	while (node != NULL)
 	{
+
 		envp[i] = join_key_and_value((char *)node->key, (char *)node->data);
+		i--;
 		node = node->next;
 		// printf("%s\n", envp[i]);
-		i--;
+	}
+	return (i);
+}
+
+int		transfom_env_list(t_node *node, char **envp, int i)
+{
+	while (node != NULL)
+	{
+		if (node->operator)
+		{
+			envp[i] = join_key_and_value((char *)node->key, (char *)node->data);
+			i--;
+		}
+		node = node->next;
+		// printf("%s\n", envp[i]);
 	}
 	return (i);
 }
@@ -68,7 +84,7 @@ char **make_envp_from_dict(t_node **dict)
 
 	i = 0;
 
-	size = dict_size(dict);
+	size = env_size(dict);
 	envp = malloc((size + 1) * sizeof(char *));
 	envp[size] = NULL;
 	size -= 1;
@@ -76,7 +92,7 @@ char **make_envp_from_dict(t_node **dict)
 
 	while (i < DICT_ARRAY_SIZE)
 	{
-		size = transfom_tuple_list(dict[i], envp, size);
+		size = transfom_env_list(dict[i], envp, size);
 		i++;
 	}
 

@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:22:37 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/01/30 14:27:22 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/07 15:32:01 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void	print_list(t_node *list)
 {
 	while(list != NULL)
 	{
-		printf("%s, ", (char *)list->data);
+		printf("%s %d, ", (char *)list->data, list->operator);
 		list = list->next;
 	}
 	printf("\n");
@@ -119,4 +119,31 @@ void	free_list(t_node *list)
 		free(ptr->data);
 		free(ptr);
 	}
+}
+
+t_node	*remove_node_from_list(t_node *list, t_node *node)
+{
+	t_node *temp;
+	t_node *first_node;
+
+	first_node = list;
+	if (list->next == NULL)
+	{
+		free(list);
+		return (NULL);
+	}
+	while (list != node && list != NULL)
+	{
+		temp = list;
+		list = list->next;
+	}
+	if (list != NULL)
+	{
+		if (first_node == node)
+			first_node = list->next;
+		else
+			temp->next = list->next;
+		free(list);
+	}
+	return (first_node);
 }

@@ -1,4 +1,4 @@
-SRCS	= dict.c tokenizer.c list.c parser.c vars.c envp.c files.c minishell.c
+SRCS	= dict.c tokenizer.c list.c parser.c vars.c envp.c files.c minishell.c builtin_echo.c builtins.c
 OBJS	= ${SRCS:.c=.o}
 
 CC	= cc

@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:38 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/06 21:47:30 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/07 15:12:56 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,17 @@ void	free_list(t_node *list);
 void	free_str_array(char **args);
 void	free_simple_node(t_node *node);
 int		size_of_list(t_node *list);
+t_node	*remove_node_from_list(t_node *list, t_node *node);
 
 /*dict*/
+int		print_tuple_list(t_node *node);
+
+unsigned long	get_hash(char *str);
 t_node	**create_dict(void);
 int		print_tuple_list(t_node *node);
-void	add_dict_value(t_node **dict, char *key, char *value);
+void	add_dict_value(t_node **dict, char *key, char *value, int is_env);
 int		print_dict(t_node **dict);
+int		env_size(t_node **dict);
 int		dict_size(t_node **dict);
 void	free_dict(t_node **dict);
 t_node	*find_dict_node(t_node **dict, char *key);
@@ -96,3 +101,9 @@ int		get_fd_for_file(char *file_name, int overwrite, t_node	**dict);
 char	*check_command_path(t_parse_data data);
 int		check_error(int i);
 void	exec_command(t_parse_data data);
+
+/*builtins*/
+int		echo_cmd(t_parse_data data);
+int		check_builtin(t_parse_data data);
+void	exec_builtin(t_parse_data data);
+

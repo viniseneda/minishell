@@ -86,8 +86,8 @@ void	exec_command(t_parse_data data)
 	{
 		ft_putstr_fd(data.args[0], 1);
 		ft_putstr_fd(" command not found\n", 1);
-		check_error(close(data.fd_in));
-		check_error(close(data.fd_out));
+		// check_error(close(data.fd_in));
+		// check_error(close(data.fd_out));
 		return ;
 	}
 	id = check_error(fork());

@@ -61,6 +61,20 @@ int		count_tuple_list(t_node *node)
 	return (size);
 }
 
+int		count_env_list(t_node *node)
+{
+	int	size;
+
+	size = 0;
+	while (node != NULL)
+	{
+		if (node->operator)
+			size++;
+		node = node->next;
+	}
+	return (size);
+}
+
 void	free_tuple_list(t_node *node)
 {
 	t_node	*last;
@@ -75,7 +89,7 @@ void	free_tuple_list(t_node *node)
 	}
 }
 
-void	add_dict_value(t_node **dict, char *key, char *value)
+void	add_dict_value(t_node **dict, char *key, char *value, int is_env)
 {
 	unsigned long hash;
 	t_node *node;
@@ -84,6 +98,7 @@ void	add_dict_value(t_node **dict, char *key, char *value)
 		return ;
 	node = malloc(sizeof(t_node));
 	node->next = NULL;
+	node->operator = is_env;
 	hash = get_hash(key) % DICT_ARRAY_SIZE;
 
 	// printf("%ld, %p, %p, %p\n", hash, *(dict + hash), node, node->next);
@@ -132,6 +147,24 @@ int	dict_size(t_node **dict)
 		if (*(dict + i) != NULL)
 		{
 			size += count_tuple_list(*(dict + i));
+		}
+		i++;
+	}
+	return(size);
+}
+
+int	env_size(t_node **dict)
+{
+	int i;
+	int size;
+
+	i = 0;
+	size = 0;
+	while (i < DICT_ARRAY_SIZE)
+	{
+		if (*(dict + i) != NULL)
+		{
+			size += count_env_list(*(dict + i));
 		}
 		i++;
 	}
@@ -196,7 +229,7 @@ char *find_var(t_node **dict, char *key)
 void	change_or_add_value(t_node **dict, char *key, char *value)
 {
 	if (!change_dict_value(dict, key, value))
-		add_dict_value(dict, key, value);
+		add_dict_value(dict, key, value, 0);
 }
 
 // int	main(void)

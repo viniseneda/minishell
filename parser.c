@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:55 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/06 20:14:46 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/07 13:58:09 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -263,8 +263,17 @@ void	parse(t_node *token_list, t_node **dict)
 		else if (*data.args != NULL)
 		{
 			data.envp = make_envp_from_dict(data.dict);
-			data.bin_path = check_command_path(data);
-			exec_command(data);
+			if (check_builtin(data) == 1)
+			{
+				printf("%s\n", "VIA BUILDIN");
+				exec_builtin(data);
+			}
+			else
+			{
+				printf("%s\n", "VIA EXEC");
+				data.bin_path = check_command_path(data);
+				exec_command(data);
+			}
 			free_str_array(data.envp);
 		}
 		free_parse_data(data);

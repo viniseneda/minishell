@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/12 11:37:46 by aprotoce          #+#    #+#             */
-/*   Updated: 2022/02/06 22:31:11 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/07 15:45:19 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int	main(int argc, char **argv, char **envp)
 		{
 			errno = 0;
 			list = tokenize(line);
+			// print_list(list);
 			replace_vars_in_token_list(dict, &list);
 			// print_list(list);
 			if (errno == 501)
