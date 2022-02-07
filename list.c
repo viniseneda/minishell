@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:22:37 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/07 15:32:01 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/07 19:39:58 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,10 +88,9 @@ void	print_str_array(char **args)
 	i = 0;
 	while(args[i] != NULL)
 	{
-		printf("%s, ", args[i]);
+		printf("%s\n", args[i]);
 		i++;
 	}
-	printf("\n");
 }
 
 void	free_str_array(char **args)

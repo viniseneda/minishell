@@ -81,6 +81,7 @@ char	*check_command_path(t_parse_data data)
 void	exec_command(t_parse_data data)
 {
 	int	id;
+	int	wait_id;
 
 	if (data.bin_path == NULL)
 	{
@@ -101,7 +102,8 @@ void	exec_command(t_parse_data data)
 		check_error(close(data.fd_in));
 	if (data.fd_out != 1)
 		check_error(close(data.fd_out));
-	waitpid(id, NULL, WUNTRACED);
+	waitpid(id, &wait_id, WUNTRACED);
+	change_or_add_value(data.dict, "?", ft_itoa(WEXITSTATUS(wait_id)));
 }
 
 // int	main(int argc, char **argv, char **envp)

@@ -12,6 +12,15 @@
 
 #include "minishell.h"
 
+void	env_builtin(t_parse_data data)
+{
+	char **envp;
+
+	envp = make_envp_from_dict(data.dict);
+	print_str_array(envp);
+	free_str_array(envp);
+}
+
 void	unset_builtin(t_parse_data data)
 {
 	char	**args;
@@ -54,7 +63,9 @@ int check_builtin(t_parse_data data)
 		return (1);
 	if (!(ft_strncmp(data.args[0], "unset", 4)))
 		return (1);
-	if (!(ft_strncmp(data.args[0], "export", 4)))
+	if (!(ft_strncmp(data.args[0], "export", 6)))
+		return (1);
+	if (!(ft_strncmp(data.args[0], "env", 3)))
 		return (1);
 	return (0);
 }
@@ -67,4 +78,6 @@ void exec_builtin(t_parse_data data)
 		export_builtin(data);
 	if (!(ft_strncmp(data.args[0], "unset", 5)))
 		unset_builtin(data);
+	if (!(ft_strncmp(data.args[0], "env", 3)))
+		env_builtin(data);
 }
