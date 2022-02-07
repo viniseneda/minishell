@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:38 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/05 17:53:50 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/06 21:47:30 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,11 @@ typedef struct s_parse_data
 	int		fd_out;
 	int		pipe1[2];
 	int		pipe2[2];
+	int		is_here_doc;
 	char	**envp;
 	char	*bin_path;
 	t_node	**dict;
-	int		is_here_doc;
+
 	t_node	*assigment;
 	char	**args;
 	t_node	**token_list;
@@ -71,6 +72,8 @@ void	change_or_add_value(t_node **dict, char *key, char *value);
 
 /*envp*/
 char	**make_envp_from_dict(t_node **dict);
+char	*get_key(char *str);
+char	*get_value(char *str);
 void	save_envp_to_dict(t_node **dict, char **envp);
 
 /*tokenize*/
@@ -82,7 +85,8 @@ int		is_char_in_set(char c, char *set);
 
 /*vars*/
 char	*replace_vars_in_str(t_node **dict, char *str);
-t_node	*replace_vars_in_token_list(t_node **dict, t_node *list);
+void	replace_vars_in_token_list(t_node **dict, t_node **list_addr);
+void	assign_var(t_parse_data data);
 
 /*parser*/
 void	parse(t_node *token_list, t_node **dict);

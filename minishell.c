@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/12 11:37:46 by aprotoce          #+#    #+#             */
-/*   Updated: 2022/02/05 17:54:12 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/06 22:31:11 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ int	main(int argc, char **argv, char **envp)
 		{
 			errno = 0;
 			list = tokenize(line);
-			replace_vars_in_token_list(dict, list);
+			replace_vars_in_token_list(dict, &list);
 			// print_list(list);
 			if (errno == 501)
 			{
 				free(line);
-				printf("no closing quote\n");
+				printf("Error: no closing quote\n");
 				continue;
 			}
 			parse(list, dict);

@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:55 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/05 19:04:38 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/06 20:14:46 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,11 +93,6 @@ t_node	*split_by_pipe(t_node **list)
 	free_last_node(command);
 	return (command);
 }
-
-// int	get_fd_for_file(char *file_name, int overwrite, t_node	**dict)
-// {
-
-// }
 
 t_parse_data	parse_in(t_parse_data data)
 {
@@ -262,14 +257,16 @@ void	parse(t_node *token_list, t_node **dict)
 		data = parse_assigment(data);
 		data = parse_cmd_and_args(data);
 		// free_list(sub_token_list);
-
-		data.envp = make_envp_from_dict(data.dict);
-		// write(1, "A\n", 2);
 		// print_parse(data);
-
-		data.bin_path = check_command_path(data);
-		exec_command(data);
-		
+		if (token_list == NULL && data.assigment != NULL && !data.last_was_pipe)
+			assign_var(data);
+		else if (*data.args != NULL)
+		{
+			data.envp = make_envp_from_dict(data.dict);
+			data.bin_path = check_command_path(data);
+			exec_command(data);
+			free_str_array(data.envp);
+		}
 		free_parse_data(data);
 		data.last_was_pipe = 1;
 	}

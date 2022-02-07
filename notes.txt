@@ -1,3 +1,6 @@
+http://www.crasseux.com/books/ctutorial/Environment-variables.html
+
+
 make sublist till | or ||
 for sublist:
 
