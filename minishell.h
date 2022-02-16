@@ -6,15 +6,18 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:38 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/15 22:31:40 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/16 09:10:08 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/stat.h>
 #include <stdio.h>
 #include "libft.h"
 #include <stdlib.h>
+#include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/types.h>
 #include <signal.h>
 #include <sys/wait.h>
 #include <errno.h>

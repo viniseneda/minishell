@@ -52,6 +52,19 @@ int get_fd_for_file(char *file_name, int overwrite, t_node **dict)
 	return (fd);
 }
 
+int	check_if_directory(char *path)
+{
+	struct stat sb;
+
+	if(stat(path, &sb) == -1)
+		return (0);
+	if(S_ISDIR(sb.st_mode & __S_IFMT))
+	{
+		return(1);
+	}
+	return(0);
+}
+
 char *check_command_path(t_parse_data data)
 {
 	char **pathv;
@@ -75,6 +88,22 @@ char *check_command_path(t_parse_data data)
 		n++;
 	}
 	free_split(pathv);
+	// printf("args[0]: %s\n", data.args[0]);
+	if (!access(data.args[0], F_OK) && !check_if_directory(data.args[0]))
+		return(data.args[0]);
+	else
+	{
+		if (check_if_directory(data.args[0]))
+		{
+			change_or_add_value(data.dict, "?", "126");
+			printf("bash: %s: Is a directory\n", data.args[0]);
+		}
+		else
+		{
+			change_or_add_value(data.dict, "?", "127");
+			printf("%s command not found\n", data.args[0]);
+		}
+	}
 	return (NULL);
 }
 
@@ -83,14 +112,14 @@ void exec_command(t_parse_data data)
 	int id;
 	int wait_id;
 
-	if (data.bin_path == NULL)
-	{
-		ft_putstr_fd(data.args[0], 1);
-		ft_putstr_fd(" command not found\n", 1);
-		// check_error(close(data.fd_in));
-		// check_error(close(data.fd_out));
-		return;
-	}
+	// if (data.bin_path == NULL)
+	// {
+	// 	ft_putstr_fd(data.args[0], 1);
+	// 	ft_putstr_fd(" command not found\n", 1);
+	// 	// check_error(close(data.fd_in));
+	// 	// check_error(close(data.fd_out));
+	// 	return;
+	// }
 	id = check_error(fork());
 	if (id == 0)
 	{
