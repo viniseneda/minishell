@@ -6,11 +6,17 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/12 11:37:46 by aprotoce          #+#    #+#             */
-/*   Updated: 2022/02/07 15:45:19 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/15 22:48:04 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	sigint_handler(int sig)
+{
+	rl_replace_line("", 1);
+	printf("\n["BOLD_H_WHITE"minishell - vvarussa & aprotoce"RESET"]$ ");
+}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -20,13 +26,16 @@ int	main(int argc, char **argv, char **envp)
 	int		status;
 	t_node	*list;
 
+	signal(SIGINT, &sigint_handler);
+	signal(SIGQUIT, SIG_IGN);
 	flagexit = 1;
 	status = 0;
 	dict = create_dict();
 	save_envp_to_dict(dict, envp);
 	while (flagexit)
 	{
-		line = readline("[minishell - vvarussa & aprotoce]$");
+		line = NULL;
+		line = readline("["BOLD_H_WHITE"minishell - vvarussa & aprotoce"RESET"]$ ");
 		add_history(line);
 		if (line == NULL)
 			flagexit = 0;

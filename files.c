@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	check_error(int i)
+int check_error(int i)
 {
 	if (i < 0)
 	{
@@ -10,9 +10,9 @@ int	check_error(int i)
 	return (i);
 }
 
-void	free_split(char **vector)
+void free_split(char **vector)
 {
-	int	n;
+	int n;
 
 	n = 0;
 	while (vector[n] != NULL)
@@ -23,9 +23,9 @@ void	free_split(char **vector)
 	free(vector);
 }
 
-char	*make_file_path(char *name, char *path)
+char *make_file_path(char *name, char *path)
 {
-	static	char str[200];
+	static char str[200];
 
 	*str = '\0';
 	ft_strlcat(str, path, strlen(path) + 1);
@@ -34,30 +34,30 @@ char	*make_file_path(char *name, char *path)
 	return (str);
 }
 
-int	get_fd_for_file(char *file_name, int overwrite, t_node	**dict)
+int get_fd_for_file(char *file_name, int overwrite, t_node **dict)
 {
 	int fd;
 	char *path;
 
 	path = find_var(dict, "PWD");
 	path = make_file_path(file_name, path);
-	if(overwrite)
+	if (overwrite)
 	{
 		fd = open(path, O_RDWR | O_APPEND | O_CREAT, 0666);
 	}
 	else
 	{
-		fd = open(path, O_RDWR | O_TRUNC |  O_CREAT, 0666);
+		fd = open(path, O_RDWR | O_TRUNC | O_CREAT, 0666);
 	}
 	return (fd);
 }
 
-char	*check_command_path(t_parse_data data)
+char *check_command_path(t_parse_data data)
 {
-	char	**pathv;
-	char	*program_path;
-	char	*temp;
-	int		n;
+	char **pathv;
+	char *program_path;
+	char *temp;
+	int n;
 
 	n = 0;
 	pathv = ft_split(find_var(data.dict, "PATH"), ':');
@@ -78,10 +78,10 @@ char	*check_command_path(t_parse_data data)
 	return (NULL);
 }
 
-void	exec_command(t_parse_data data)
+void exec_command(t_parse_data data)
 {
-	int	id;
-	int	wait_id;
+	int id;
+	int wait_id;
 
 	if (data.bin_path == NULL)
 	{
@@ -89,7 +89,7 @@ void	exec_command(t_parse_data data)
 		ft_putstr_fd(" command not found\n", 1);
 		// check_error(close(data.fd_in));
 		// check_error(close(data.fd_out));
-		return ;
+		return;
 	}
 	id = check_error(fork());
 	if (id == 0)

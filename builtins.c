@@ -67,6 +67,12 @@ int check_builtin(t_parse_data data)
 		return (1);
 	if (!(ft_strncmp(data.args[0], "env", 3)))
 		return (1);
+	if (!(ft_strncmp(data.args[0], "exit", 4)))
+		return (1);
+	if (!(ft_strncmp(data.args[0], "pwd", 3)))
+		return (1);
+	if (!(ft_strncmp(data.args[0], "cd", 2)))
+		return (1);
 	return (0);
 }
 
@@ -80,4 +86,10 @@ void exec_builtin(t_parse_data data)
 		unset_builtin(data);
 	if (!(ft_strncmp(data.args[0], "env", 3)))
 		env_builtin(data);
+	if (!(ft_strncmp(data.args[0], "exit", 4)))
+		exit_minishell(data);
+	if (!(ft_strncmp(data.args[0], "pwd", 3)))
+		printpwd(data);
+	if (!(ft_strncmp(data.args[0], "cd", 2)))
+		changeDir(data);
 }

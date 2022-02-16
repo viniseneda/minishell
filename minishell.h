@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:38 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/07 15:12:56 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/15 22:31:40 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,18 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+# define BOLD_H_GREEN	"\e[1;92m"
+# define BOLD_H_YELLOW	"\e[1;93m"
+# define BOLD_H_BLUE	"\e[1;94m"
+# define BOLD_H_MAGENTA	"\e[1;95m"
+# define BOLD_H_CYAN	"\e[1;96m"
+# define BOLD_H_WHITE	"\e[1;97m"
+# define RESET			"\e[0m"
 #define SIZE_OF_TEMP 100
 #define DICT_ARRAY_SIZE 50
 
@@ -103,6 +111,9 @@ int		check_error(int i);
 void	exec_command(t_parse_data data);
 
 /*builtins*/
+void	changeDir(t_parse_data data);
+void	printpwd(t_parse_data data);
+void	exit_minishell(t_parse_data data);
 int		echo_cmd(t_parse_data data);
 int		check_builtin(t_parse_data data);
 void	exec_builtin(t_parse_data data);
