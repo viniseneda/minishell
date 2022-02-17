@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:55 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/16 10:05:16 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/16 21:17:53 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,9 +117,10 @@ t_parse_data	parse_in(t_parse_data data)
 		if (temp->next == NULL || temp->next->operator > 0)
 		{
 			errno = 502; // sintax error
+			free_list(*data.token_list);
 			return (data);
 		}
-		data.fd_in = get_fd_for_file(temp->next->data, 0, data.dict);
+		data.fd_in = get_fd_for_file(temp->next->data, 1, data.dict);
 		iterate_list(*data.token_list, index - 1)->next = temp->next->next;
 		free(temp->next);
 		free_simple_node(temp);
@@ -149,6 +150,7 @@ t_parse_data	parse_out(t_parse_data data, t_node *other_pipes)
 		if (temp->next == NULL || temp->next->operator > 0)
 		{
 			errno = 502; // sintax error
+			free_list(*data.token_list);
 			return (data);
 		}
 		if (strncmp(temp->data, ">>", 2) == 0)
@@ -224,7 +226,40 @@ void	print_parse(t_parse_data data)
 
 void	free_parse_data(t_parse_data data)
 {
+	// free_str_array(data.args);
+	// free_simple_node(data.assigment);
+	// free_list(*data.token_list);
+
+}
+
+void	process_cmd(t_parse_data data)
+{
+	data.envp = make_envp_from_dict(data.dict);
+	if (check_builtin(data) == 1)
+	{
+		printf("%s\n", "VIA BUILDIN");
+		exec_builtin(data);
+	}
+	else
+	{
+		printf("%s\n", "VIA EXEC");
+		data.bin_path = check_command_path(data);
+		if (data.bin_path != NULL)
+			exec_command(data);
+		free(data.bin_path);
+	}
 	free_str_array(data.args);
+	free_str_array(data.envp);
+}
+
+int	verify_errno(int error_num, int given, char *error_msg)
+{
+	if (error_num == given)
+	{
+		printf("%s", error_msg);
+		return(1);
+	}
+	return (0);
 }
 
 void	parse(t_node *token_list, t_node **dict)
@@ -244,40 +279,18 @@ void	parse(t_node *token_list, t_node **dict)
 		sub_token_list  = split_by_pipe(&token_list);
 		data.token_list = &sub_token_list;
 
-
 		data = parse_in(data);
 		data = parse_out(data, token_list);
 
-		if (errno == 502)
-		{
-			printf("Sintax error\n");
+		if (verify_errno(errno, 502, "Sintax error\n"))
 			return ;
-		}
 
 		data = parse_assigment(data);
 		data = parse_cmd_and_args(data);
-		// free_list(sub_token_list);
-		// print_parse(data);
 		if (token_list == NULL && data.assigment != NULL && !data.last_was_pipe)
 			assign_var(data);
 		else if (*data.args != NULL)
-		{
-			data.envp = make_envp_from_dict(data.dict);
-			if (check_builtin(data) == 1)
-			{
-				printf("%s\n", "VIA BUILDIN");
-				exec_builtin(data);
-			}
-			else
-			{
-				printf("%s\n", "VIA EXEC");
-				data.bin_path = check_command_path(data);
-				if (data.bin_path != NULL)
-					exec_command(data);
-			}
-			free_str_array(data.envp);
-		}
-		free_parse_data(data);
+			process_cmd(data);
 		data.last_was_pipe = 1;
 	}
 }

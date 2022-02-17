@@ -49,6 +49,7 @@ int get_fd_for_file(char *file_name, int overwrite, t_node **dict)
 	{
 		fd = open(path, O_RDWR | O_TRUNC | O_CREAT, 0666);
 	}
+	free(file_name);
 	return (fd);
 }
 
@@ -110,6 +111,7 @@ char *check_command_path(t_parse_data data)
 void exec_command(t_parse_data data)
 {
 	int id;
+	char *temp;
 	int wait_id;
 
 	// if (data.bin_path == NULL)
@@ -132,7 +134,9 @@ void exec_command(t_parse_data data)
 	if (data.fd_out != 1)
 		check_error(close(data.fd_out));
 	waitpid(id, &wait_id, WUNTRACED);
-	change_or_add_value(data.dict, "?", ft_itoa(WEXITSTATUS(wait_id)));
+	temp = ft_itoa(WEXITSTATUS(wait_id));
+	change_or_add_value(data.dict, "?", temp);
+	free(temp);
 }
 
 // int	main(int argc, char **argv, char **envp)
