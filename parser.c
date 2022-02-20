@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:55 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/20 09:23:21 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/20 09:35:09 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,7 @@ void	process_cmd(t_parse_data data)
 		data.bin_path = check_command_path(data);
 		if (data.bin_path != NULL)
 			exec_command(data);
-		// free(data.bin_path); // um bug bizarro aqui
+		free(data.bin_path); // um bug bizarro aqui
 	}
 	free_str_array(data.args);
 	free_str_array(data.envp);

@@ -91,7 +91,7 @@ char *check_command_path(t_parse_data data)
 	free_split(pathv);
 	// printf("args[0]: %s\n", data.args[0]);
 	if (!access(data.args[0], F_OK) && !check_if_directory(data.args[0]))
-		return(data.args[0]);
+		return(ft_strdup(data.args[0]));
 	else
 	{
 		if (check_if_directory(data.args[0]))
