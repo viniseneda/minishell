@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:55 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/16 21:17:53 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/20 09:23:21 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,23 @@ t_node	*split_by_pipe(t_node **list)
 	return (command);
 }
 
+int	here_doc(char *delimiter)
+{
+	char	*line;
+	int		pipe_fd[2];
+
+	pipe(pipe_fd);
+	line = readline("> ");
+	while (strcmp(delimiter, line) != 0)
+	{
+		write(pipe_fd[1], line, strlen(line));
+		write(pipe_fd[1], "\n", 1);
+		line = readline("> ");
+	}
+	close(pipe_fd[1]);
+	return (pipe_fd[0]);
+}
+
 t_parse_data	parse_in(t_parse_data data)
 {
 	int	index;
@@ -109,21 +126,22 @@ t_parse_data	parse_in(t_parse_data data)
 		return (data);
 	}
 	//fazer condição de  erro de quando nao tem nada depois do >
-	while (index > 0)
+	while (index >= 0)
 	{
 		temp = iterate_list(*data.token_list, index);
-		if (strncmp(temp->data, "<<", 2) == 0)
-			data.is_here_doc = 1;
 		if (temp->next == NULL || temp->next->operator > 0)
 		{
 			errno = 502; // sintax error
 			free_list(*data.token_list);
 			return (data);
 		}
-		data.fd_in = get_fd_for_file(temp->next->data, 1, data.dict);
-		iterate_list(*data.token_list, index - 1)->next = temp->next->next;
-		free(temp->next);
-		free_simple_node(temp);
+		if (strncmp(temp->data, "<<", 2) == 0)
+			data.fd_in = here_doc(temp->next->data);
+		else
+			data.fd_in = get_fd_for_file(temp->next->data, 1, data.dict);
+		*data.token_list = remove_node_from_list(*data.token_list, temp->next);
+		free(temp->data);
+		*data.token_list = remove_node_from_list(*data.token_list, temp);
 		index = find_node_index(*data.token_list, "<", "<<"); // make a way to check for here dock
 	}
 	return (data);
@@ -144,7 +162,7 @@ t_parse_data	parse_out(t_parse_data data, t_node *other_pipes)
 		return (data);
 	}
 	//fazer condição de  erro de quando nao tem nada depois do >
-	while (index > 0)
+	while (index >= 0)
 	{
 		temp = iterate_list(*data.token_list, index);
 		if (temp->next == NULL || temp->next->operator > 0)
@@ -157,9 +175,9 @@ t_parse_data	parse_out(t_parse_data data, t_node *other_pipes)
 			data.fd_out = get_fd_for_file(temp->next->data, 1, data.dict);
 		else
 			data.fd_out = get_fd_for_file(temp->next->data, 0, data.dict);
-		iterate_list(*data.token_list, index - 1)->next = temp->next->next;
-		free(temp->next);
-		free_simple_node(temp);
+		*data.token_list = remove_node_from_list(*data.token_list, temp->next);
+		free(temp->data);
+		*data.token_list = remove_node_from_list(*data.token_list, temp);
 		index = find_node_index(*data.token_list, ">", ">>");
 	}
 	// printf("(%d)", data.is_append);
@@ -246,7 +264,7 @@ void	process_cmd(t_parse_data data)
 		data.bin_path = check_command_path(data);
 		if (data.bin_path != NULL)
 			exec_command(data);
-		free(data.bin_path);
+		// free(data.bin_path); // um bug bizarro aqui
 	}
 	free_str_array(data.args);
 	free_str_array(data.envp);
@@ -279,6 +297,7 @@ void	parse(t_node *token_list, t_node **dict)
 		sub_token_list  = split_by_pipe(&token_list);
 		data.token_list = &sub_token_list;
 
+		// print_list(sub_token_list);
 		data = parse_in(data);
 		data = parse_out(data, token_list);
 

@@ -136,6 +136,9 @@ void exec_command(t_parse_data data)
 	waitpid(id, &wait_id, WUNTRACED);
 	temp = ft_itoa(WEXITSTATUS(wait_id));
 	change_or_add_value(data.dict, "?", temp);
+	// printf("ARGS: ");
+	// print_str_array(data.args);
+	// free_str_array(data.args);
 	free(temp);
 }
 

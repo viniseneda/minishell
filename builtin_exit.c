@@ -27,7 +27,7 @@ void	exit_minishell(t_parse_data data)
 		free_str_array(data.args);
 		free_dict(data.dict);
 		free_str_array(data.envp);
-		rl_clear_history();
+		// rl_clear_history();
 		exit(numeroerro);
 	}
 
