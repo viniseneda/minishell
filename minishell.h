@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:38 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/20 22:21:06 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/21 10:49:59 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ void	replace_vars_in_token_list(t_node **dict, t_node **list_addr);
 void	assign_var(t_parse_data data);
 
 /*parser*/
+int		verify_errno(int error_num, int given, char *error_msg);
 void	parse(t_node *token_list, t_node **dict);
 
 /*files*/

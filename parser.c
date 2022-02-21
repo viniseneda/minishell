@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:55 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/21 08:37:17 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/21 11:06:08 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,12 +88,6 @@ t_node	*split_by_pipe(t_node **list)
 		*list = NULL;
 		return (command);
 	}
-	if (temp != NULL && temp->next->operator == 2)
-	{
-		errno = 502;
-		free_list(*list);
-		return (NULL);
-	}
 	*list = temp->next;
 	temp->next = NULL;
 	free_last_node(command);
@@ -124,8 +118,8 @@ t_parse_data	parse_in(t_parse_data data)
 	int	index;
 	t_node *temp;
 
-	if (errno == 502)
-		return (data);
+	// if (errno == 502)
+	// 	return (data);
 	index = find_node_index(*data.token_list, "<", "<<");
 	if (index < 0)
 	{
@@ -139,12 +133,12 @@ t_parse_data	parse_in(t_parse_data data)
 	while (index >= 0)
 	{
 		temp = iterate_list(*data.token_list, index);
-		if (temp->next == NULL || temp->next->operator > 0)
-		{
-			errno = 502; // sintax error
-			free_list(*data.token_list);
-			return (data);
-		}
+		// if (temp->next == NULL || temp->next->operator > 0)
+		// {
+		// 	errno = 502; // sintax error
+		// 	free_list(*data.token_list);
+		// 	return (data);
+		// }
 		if (strncmp(temp->data, "<<", 2) == 0)
 			data.fd_in = here_doc(temp->next->data);
 		else
@@ -162,8 +156,8 @@ t_parse_data	parse_out(t_parse_data data, t_node *other_pipes)
 	int	index;
 	t_node *temp;
 
-	if (errno == 502)
-		return (data);
+	// if (errno == 502)
+	// 	return (data);
 	index = find_node_index(*data.token_list, ">", ">>");
 	if (index < 0)
 	{
@@ -177,12 +171,12 @@ t_parse_data	parse_out(t_parse_data data, t_node *other_pipes)
 	while (index >= 0)
 	{
 		temp = iterate_list(*data.token_list, index);
-		if (temp->next == NULL || temp->next->operator > 0)
-		{
-			errno = 502; // sintax error
-			free_list(*data.token_list);
-			return (data);
-		}
+		// if (temp->next == NULL || temp->next->operator > 0)
+		// {
+		// 	errno = 502; // sintax error
+		// 	free_list(*data.token_list);
+		// 	return (data);
+		// }
 		if (strncmp(temp->data, ">>", 2) == 0)
 			data.fd_out = get_fd_for_file(temp->next->data, 1, data.dict);
 		else
@@ -303,11 +297,11 @@ void	parse(t_node *token_list, t_node **dict)
 		data = parse_in(data);
 		data = parse_out(data, token_list);
 
-		if (verify_errno(errno, 502, "Sintax error\n"))
-			return ;
+		// if (verify_errno(errno, 502, "Sintax error\n"))
+		// 	return ;
 
 		if (*data.token_list == NULL)
-			return ;
+			continue ;
 
 		data = parse_assigment(data);
 		data = parse_cmd_and_args(data);
