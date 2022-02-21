@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:55 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/20 09:35:09 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/20 23:08:52 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,8 @@ int	here_doc(char *delimiter)
 		write(pipe_fd[1], "\n", 1);
 		line = readline("> ");
 	}
+	free(delimiter);
+	free(line);
 	close(pipe_fd[1]);
 	return (pipe_fd[0]);
 }
@@ -234,7 +236,6 @@ void	print_parse(t_parse_data data)
 	as = data.assigment;
 	printf("in: %d\n", data.fd_in);
 	printf("out: %d\n", data.fd_out);
-	printf("is here doc: %d\n", data.is_here_doc);
 	if (as != NULL)
 		printf("assigment: %s\n", (char *)as->data);
 	printf("arguments: ");
@@ -293,19 +294,28 @@ void	parse(t_node *token_list, t_node **dict)
 		data.pipe2[0] = data.pipe1[0];
 		data.pipe2[1] = data.pipe1[1];
 		pipe(data.pipe1);
-		data.is_here_doc = 0;
 		sub_token_list  = split_by_pipe(&token_list);
 		data.token_list = &sub_token_list;
 
 		// print_list(sub_token_list);
 		data = parse_in(data);
+
+		if (verify_errno(errno, 502, "Sintax error\n"))
+			return ;
+
 		data = parse_out(data, token_list);
 
 		if (verify_errno(errno, 502, "Sintax error\n"))
 			return ;
 
-		data = parse_assigment(data);
-		data = parse_cmd_and_args(data);
+		if (*data.token_list != NULL)
+		{
+			data = parse_assigment(data);
+			data = parse_cmd_and_args(data);
+		}
+		else
+			return ;
+
 		if (token_list == NULL && data.assigment != NULL && !data.last_was_pipe)
 			assign_var(data);
 		else if (*data.args != NULL)

@@ -14,7 +14,7 @@ NAME	= minishell
 RM	= rm -f
 
 $(NAME):	${OBJS}
-	cc -o $(NAME) ${OBJS} -L./libft -lft -lreadline -g
+	cc -o $(NAME) ${OBJS} -g -L./libft -lft -lreadline
 
 
 all:	$(NAME)

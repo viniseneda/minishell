@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/12 11:37:46 by aprotoce          #+#    #+#             */
-/*   Updated: 2022/02/15 22:48:04 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/20 22:56:08 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ int	main(int argc, char **argv, char **envp)
 		free(line);
 	}
 	clear_history();
+	free_dict(dict);
 	printf("\n");
 	return (0);
 }

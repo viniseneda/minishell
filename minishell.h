@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:38 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/16 09:10:08 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/20 22:21:06 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ typedef struct s_parse_data
 	int		fd_out;
 	int		pipe1[2];
 	int		pipe2[2];
-	int		is_here_doc;
 	char	**envp;
 	char	*bin_path;
 	t_node	**dict;
