@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:23:55 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/20 23:08:52 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/21 08:37:17 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,12 @@ t_node	*split_by_pipe(t_node **list)
 		*list = NULL;
 		return (command);
 	}
+	if (temp != NULL && temp->next->operator == 2)
+	{
+		errno = 502;
+		free_list(*list);
+		return (NULL);
+	}
 	*list = temp->next;
 	temp->next = NULL;
 	free_last_node(command);
@@ -118,6 +124,8 @@ t_parse_data	parse_in(t_parse_data data)
 	int	index;
 	t_node *temp;
 
+	if (errno == 502)
+		return (data);
 	index = find_node_index(*data.token_list, "<", "<<");
 	if (index < 0)
 	{
@@ -154,6 +162,8 @@ t_parse_data	parse_out(t_parse_data data, t_node *other_pipes)
 	int	index;
 	t_node *temp;
 
+	if (errno == 502)
+		return (data);
 	index = find_node_index(*data.token_list, ">", ">>");
 	if (index < 0)
 	{
@@ -243,14 +253,6 @@ void	print_parse(t_parse_data data)
 	printf("\n");
 }
 
-void	free_parse_data(t_parse_data data)
-{
-	// free_str_array(data.args);
-	// free_simple_node(data.assigment);
-	// free_list(*data.token_list);
-
-}
-
 void	process_cmd(t_parse_data data)
 {
 	data.envp = make_envp_from_dict(data.dict);
@@ -299,23 +301,16 @@ void	parse(t_node *token_list, t_node **dict)
 
 		// print_list(sub_token_list);
 		data = parse_in(data);
-
-		if (verify_errno(errno, 502, "Sintax error\n"))
-			return ;
-
 		data = parse_out(data, token_list);
 
 		if (verify_errno(errno, 502, "Sintax error\n"))
 			return ;
 
-		if (*data.token_list != NULL)
-		{
-			data = parse_assigment(data);
-			data = parse_cmd_and_args(data);
-		}
-		else
+		if (*data.token_list == NULL)
 			return ;
 
+		data = parse_assigment(data);
+		data = parse_cmd_and_args(data);
 		if (token_list == NULL && data.assigment != NULL && !data.last_was_pipe)
 			assign_var(data);
 		else if (*data.args != NULL)

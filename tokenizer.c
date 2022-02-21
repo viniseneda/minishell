@@ -6,7 +6,7 @@
 /*   By: vvarussa <vvarussa@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 14:24:42 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/01/30 14:46:42 by vvarussa         ###   ########.fr       */
+/*   Updated: 2022/02/21 08:29:21 by vvarussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,14 +128,16 @@ int	check_for_quote(t_node **list, char **line)
 
 void	add_operand_to_list(t_node **list, char **line)
 {
-	if(is_char_in_set(**line, "|<>") && **line == *(*line + 1) )
+	if(is_char_in_set(**line, "<>") && **line == *(*line + 1) )
 	{
 		temp_str(**line);
 		add_token_to_list(list, temp_str(**line), 1);
 		*line = *line + 1;
 	}
-	else if (is_char_in_set(**line, "|<>"))
+	else if (is_char_in_set(**line, "<>"))
 		add_token_to_list(list, temp_str(**line), 1);
+	else if (is_char_in_set(**line, "|"))
+		add_token_to_list(list, temp_str(**line), 2);
 }
 
 t_node *tokenize(char *line)
