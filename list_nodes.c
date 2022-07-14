@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   list.c                                             :+:      :+:    :+:   */
+/*   list_nodes.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aprotoce <aprotoce@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/27 14:22:37 by vvarussa          #+#    #+#             */
-/*   Updated: 2022/02/28 22:11:06 by aprotoce         ###   ########.fr       */
+/*   Created: 2022/02/26 16:34:42 by aprotoce          #+#    #+#             */
+/*   Updated: 2022/02/26 16:34:42 by aprotoce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	size_of_list(t_node *list)
+t_node	*get_last_node(t_node *list)
 {
-	int	i;
-
-	i = 0;
-	while (list != NULL)
-	{
-		i++;
+	while (list->next != NULL)
 		list = list->next;
-	}
-	return (i);
+	return (list);
 }
 
-t_node	*add_char_to_list(t_node *list, char *data)
+void	free_simple_node(t_node *node)
+{
+	free(node->data);
+	free(node);
+}
+
+t_node	*add_node_to_list(t_node *list, char *data, int operator)
 {
 	t_node	*node;
 
@@ -33,6 +33,7 @@ t_node	*add_char_to_list(t_node *list, char *data)
 		return (list);
 	node = malloc(sizeof(t_node));
 	node->next = NULL;
+	node->operator = operator;
 	node->data = ft_strdup(data);
 	if (list != NULL)
 		get_last_node(list)->next = node;
@@ -41,25 +42,29 @@ t_node	*add_char_to_list(t_node *list, char *data)
 	return (list);
 }
 
-void	print_list(t_node *list)
+t_node	*remove_node_from_list(t_node *list, t_node *node)
 {
-	while (list != NULL)
+	t_node	*temp;
+	t_node	*first_node;
+
+	first_node = list;
+	if (list->next == NULL)
 	{
-		printf("%s %d, ", (char *)list->data, list->operator);
+		free(list);
+		return (NULL);
+	}
+	while (list != node && list != NULL)
+	{
+		temp = list;
 		list = list->next;
 	}
-	printf("\n");
-}
-
-void	print_str_array(char **args, int fd)
-{
-	int	i;
-
-	i = 0;
-	while (args[i] != NULL)
+	if (list != NULL)
 	{
-		ft_putstr_fd(args[i], fd);
-		ft_putchar_fd('\n', fd);
-		i++;
+		if (first_node == node)
+			first_node = list->next;
+		else
+			temp->next = list->next;
+		free(list);
 	}
+	return (first_node);
 }

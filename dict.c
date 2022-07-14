@@ -1,98 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dict.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aprotoce <aprotoce@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/02/26 15:32:39 by aprotoce          #+#    #+#             */
+/*   Updated: 2022/02/26 15:45:19 by aprotoce         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-unsigned long get_hash(char *str)
-{
-	unsigned long hash;
-	int c;
-
-	hash = 5381;
-	while (*str)
-	{
-		c = *str;
-		str++;
-		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-	}
-
-	return hash;
-}
-
-t_node	**create_dict(void)
-{
-	t_node **dict;
-	int i;
-
-	i = 0;
-	dict = malloc(sizeof(t_node *) * DICT_ARRAY_SIZE);
-	if (dict == NULL)
-		exit (100);
-	while (i < DICT_ARRAY_SIZE)
-	{
-		// *dict++ = NULL;
-		dict[i] = NULL;
-		i++;
-	}
-	return (dict);
-}
-
-int		print_tuple_list(t_node *node)
-{
-	int	size;
-
-	size = 0;
-	while (node != NULL)
-	{
-		printf("(%s, %s) ", (char *)node->key, (char *)node->data);
-		node = node->next;
-		size++;
-	}
-	return (size);
-}
-
-int		count_tuple_list(t_node *node)
-{
-	int	size;
-
-	size = 0;
-	while (node != NULL)
-	{
-		node = node->next;
-		size++;
-	}
-	return (size);
-}
-
-int		count_env_list(t_node *node)
-{
-	int	size;
-
-	size = 0;
-	while (node != NULL)
-	{
-		if (node->operator)
-			size++;
-		node = node->next;
-	}
-	return (size);
-}
-
-void	free_tuple_list(t_node *node)
-{
-	t_node	*last;
-
-	while (node != NULL)
-	{
-		last = node;
-		node = node->next;
-		free(last->data);
-		free(last->key);
-		free(last);
-	}
-}
 
 void	add_dict_value(t_node **dict, char *key, char *value, int is_env)
 {
-	unsigned long hash;
-	t_node *node;
+	unsigned long	hash;
+	t_node			*node;
 
 	if (key == NULL || value == NULL)
 		return ;
@@ -100,94 +23,18 @@ void	add_dict_value(t_node **dict, char *key, char *value, int is_env)
 	node->next = NULL;
 	node->operator = is_env;
 	hash = get_hash(key) % DICT_ARRAY_SIZE;
-
-	// printf("%ld, %p, %p, %p\n", hash, *(dict + hash), node, node->next);
-
 	if (*(dict + hash) == NULL)
 		*(dict + hash) = node;
 	else
 		get_last_node(*(dict + hash))->next = node;
-
 	node->key = ft_strdup(key);
 	node->data = ft_strdup(value);
 	node->next = NULL;
-
-	// dict[hash] = node;
-	// node->next = NULL;
 }
 
-int	print_dict(t_node **dict)
+t_node	*find_dict_node(t_node **dict, char *key)
 {
-	int i;
-	int size;
-
-	i = 0;
-	size = 0;
-	while (i < DICT_ARRAY_SIZE)
-	{
-		if (*(dict + i) != NULL)
-		{
-			size += print_tuple_list(*(dict + i));
-		}
-		i++;
-	}
-	printf("\n");
-	return(size);
-}
-
-int	dict_size(t_node **dict)
-{
-	int i;
-	int size;
-
-	i = 0;
-	size = 0;
-	while (i < DICT_ARRAY_SIZE)
-	{
-		if (*(dict + i) != NULL)
-		{
-			size += count_tuple_list(*(dict + i));
-		}
-		i++;
-	}
-	return(size);
-}
-
-int	env_size(t_node **dict)
-{
-	int i;
-	int size;
-
-	i = 0;
-	size = 0;
-	while (i < DICT_ARRAY_SIZE)
-	{
-		if (*(dict + i) != NULL)
-		{
-			size += count_env_list(*(dict + i));
-		}
-		i++;
-	}
-	return(size);
-}
-
-void	free_dict(t_node **dict)
-{
-	int i;
-
-	i = 0;
-	while (i < DICT_ARRAY_SIZE)
-	{
-		if (dict[i] != NULL)
-			free_tuple_list(dict[i]);
-		i++;
-	}
-	free(dict);
-}
-
-t_node *find_dict_node(t_node **dict, char *key)
-{
-	int	hash;
+	int		hash;
 	t_node	*node;
 
 	hash = get_hash(key) % DICT_ARRAY_SIZE;
@@ -204,7 +51,7 @@ t_node *find_dict_node(t_node **dict, char *key)
 	return (NULL);
 }
 
-int		change_dict_value(t_node **dict, char *key, char *new_value)
+int	change_dict_value(t_node **dict, char *key, char *new_value)
 {
 	t_node	*node;
 
@@ -213,12 +60,12 @@ int		change_dict_value(t_node **dict, char *key, char *new_value)
 		return (0);
 	free(node->data);
 	node->data = ft_strdup(new_value);
-	return(1);
+	return (1);
 }
 
-char *find_var(t_node **dict, char *key)
+char	*find_var(t_node **dict, char *key)
 {
-	t_node *node;
+	t_node	*node;
 
 	node = find_dict_node(dict, key);
 	if (node == NULL)
@@ -231,19 +78,3 @@ void	change_or_add_value(t_node **dict, char *key, char *value)
 	if (!change_dict_value(dict, key, value))
 		add_dict_value(dict, key, value, 0);
 }
-
-// int	main(void)
-// {
-// 	t_node **dict;
-// 	// char *search;
-
-// 	dict = create_dict();
-// 	// add_str_dict(dict, "name", "boo");
-// 	add_dict_value(dict, "name", "nuoo");
-
-
-// 	print_dict(dict);
-// 	change_dict_value(dict, "name", "banana");
-// 	print_dict(dict);
-// 	free_dict(dict);
-// }

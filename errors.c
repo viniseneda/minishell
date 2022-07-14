@@ -1,29 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_exit.c                                     :+:      :+:    :+:   */
+/*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aprotoce <aprotoce@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/08 13:47:28 by aprotoce          #+#    #+#             */
-/*   Updated: 2022/02/08 13:47:28 by aprotoce         ###   ########.fr       */
+/*   Created: 2022/02/26 21:49:35 by aprotoce          #+#    #+#             */
+/*   Updated: 2022/02/26 21:49:35 by aprotoce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	exit_minishell(t_parse_data data)
+int	verify_errno(int error_num, int given, char *error_msg)
 {
-	int	numeroerro;
-
-	numeroerro = 0;
-	if (!data.last_was_pipe)
+	if (error_num == given)
 	{
-		if (data.args[1])
-			numeroerro = ft_atoi(data.args[1]);
-		free_str_array(data.args);
-		free_dict(data.dict);
-		free_str_array(data.envp);
-		exit(numeroerro);
+		printf("%s", error_msg);
+		return (1);
 	}
+	return (0);
 }
